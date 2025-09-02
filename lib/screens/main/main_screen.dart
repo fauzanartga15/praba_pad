@@ -22,59 +22,38 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       currentPage = menu;
     });
-    print('Selected menu: $menu');
-  }
 
-  void _handleSubMenuSelection(String subMenu) {
-    print('Selected submenu: $subMenu');
+    // Show feedback with better UX
+    String displayName = _getMenuDisplayName(menu);
 
-    // Handle specific submenu navigation
-    switch (subMenu) {
-      case 'Tambah Supplier Baru':
-      case 'Data Supplier':
-        setState(() {
-          currentPage = 'supplier';
-        });
-        break;
-      case 'Kelola Data Supplier':
-        setState(() {
-          currentPage = 'supplier';
-        });
-        break;
-      case 'Laporan Supplier':
-        setState(() {
-          currentPage = 'supplier';
-        });
-        break;
-      case 'Order Baru':
-      case 'Template Order':
-      case 'Draft Tersimpan':
-        setState(() {
-          currentPage = 'buat';
-        });
-        break;
-      case 'Semua Order':
-      case 'Order Pending':
-      case 'Order Selesai':
-        setState(() {
-          currentPage = 'lihat';
-        });
-        break;
-    }
-
-    // Show feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Navigating to: $subMenu'),
-        duration: Duration(seconds: 2),
+        content: Text('Switched to $displayName'),
+        duration: Duration(seconds: 1),
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.only(
-          bottom: 120, // Above bottom nav
+          bottom: 140, // Above bottom nav
           left: 20,
           right: 20,
         ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
+  }
+
+  String _getMenuDisplayName(String menu) {
+    switch (menu) {
+      case 'dashboard':
+        return 'Dashboard';
+      case 'supplier':
+        return 'Supplier Management';
+      case 'buat':
+        return 'Create Purchase';
+      case 'lihat':
+        return 'View Purchases';
+      default:
+        return 'Dashboard';
+    }
   }
 
   Widget _getCurrentScreen() {
@@ -82,45 +61,80 @@ class _MainScreenState extends State<MainScreen> {
       case 'dashboard':
         return DashboardScreen();
       case 'supplier':
-        return SupplierMainScreen(); // Now shows the complete supplier system
+        return SupplierMainScreen();
       case 'buat':
         return _buildPlaceholderScreen(
-          'Buat Pembelian',
+          'Create Purchase',
           Icons.add_shopping_cart,
+          'Create new purchase orders',
         );
       case 'lihat':
-        return _buildPlaceholderScreen('Lihat Pembelian', Icons.receipt_long);
+        return _buildPlaceholderScreen(
+          'View Purchases',
+          Icons.receipt_long,
+          'View and manage purchase orders',
+        );
       default:
         return DashboardScreen();
     }
   }
 
-  Widget _buildPlaceholderScreen(String title, IconData icon) {
+  Widget _buildPlaceholderScreen(String title, IconData icon, String subtitle) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFF2697FF).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: const Color(0xFF2697FF).withValues(alpha: 0.2),
+                width: 2,
+              ),
             ),
-            child: Icon(icon, size: 80, color: Colors.grey),
+            child: Icon(icon, size: 80, color: const Color(0xFF2697FF)),
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 32),
           Text(
             title,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 12),
           Text(
-            'This screen is under development',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            subtitle,
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black54,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 40),
+          OutlinedButton.icon(
+            onPressed: () {
+              setState(() {
+                currentPage = 'dashboard';
+              });
+            },
+            icon: Icon(Icons.dashboard_outlined),
+            label: Text('Back to Dashboard'),
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              side: BorderSide(color: const Color(0xFF2697FF)),
+              foregroundColor: const Color(0xFF2697FF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
           ),
         ],
       ),
@@ -145,12 +159,9 @@ class _MainScreenState extends State<MainScreen> {
                 Expanded(flex: 5, child: _getCurrentScreen()),
               ],
             ),
-            // Bottom navigation for tablet/mobile
+            // Bottom navigation for tablet/mobile with swipe functionality
             if (!Responsive.isDesktop(context))
-              ExpandableBottomNav(
-                onMenuSelected: _handleMenuSelection,
-                onSubMenuSelected: _handleSubMenuSelection,
-              ),
+              ExpandableBottomNav(onMenuSelected: _handleMenuSelection),
           ],
         ),
       ),

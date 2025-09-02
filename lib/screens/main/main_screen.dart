@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:praba_ipad/screens/purchase/purchase_order_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/menu_app_controller.dart';
@@ -63,11 +64,7 @@ class _MainScreenState extends State<MainScreen> {
       case 'supplier':
         return SupplierMainScreen();
       case 'buat':
-        return _buildPlaceholderScreen(
-          'Create Purchase',
-          Icons.add_shopping_cart,
-          'Create new purchase orders',
-        );
+        return CreatePurchaseScreen();
       case 'lihat':
         return _buildPlaceholderScreen(
           'View Purchases',

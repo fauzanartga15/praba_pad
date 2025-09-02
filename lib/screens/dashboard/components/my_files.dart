@@ -1,74 +1,142 @@
 import 'package:flutter/material.dart';
-import '../../../constants.dart';
-import '../../../models/my_files.dart';
-import '../../../responsive.dart';
-import 'file_info_card.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-class MyFiles extends StatelessWidget {
-  const MyFiles({super.key});
+import '../../../constants.dart';
+import '../../../controllers/theme_controller.dart';
+import '../../../models/my_files.dart';
+
+class FileInfoCard extends StatelessWidget {
+  const FileInfoCard({super.key, required this.info});
+
+  final CloudStorageInfo info;
 
   @override
   Widget build(BuildContext context) {
-    final Size _size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("My Files", style: Theme.of(context).textTheme.titleMedium),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return Container(
+          padding: EdgeInsets.all(defaultPadding),
+          decoration: BoxDecoration(
+            color: getCardColor(themeController.isDarkMode),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            boxShadow: themeController.isDarkMode
+                ? []
+                : [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(defaultPadding * 0.75),
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: info.color!.withValues(alpha: 0.1),
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: SvgPicture.asset(
+                      info.svgSrc!,
+                      colorFilter: ColorFilter.mode(
+                        info.color ?? Colors.black,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.more_vert,
+                    color: themeController.isDarkMode
+                        ? Colors.white54
+                        : Colors.black54,
+                  ),
+                ],
+              ),
+              Text(
+                info.title!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: getTextColor(themeController.isDarkMode),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              onPressed: () {},
-              icon: Icon(Icons.add),
-              label: Text("Add New"),
-            ),
-          ],
-        ),
-        SizedBox(height: defaultPadding),
-        Responsive(
-          mobile: FileInfoCardGridView(
-            crossAxisCount: _size.width < 650 ? 2 : 4,
-            childAspectRatio: _size.width < 650 ? 1.3 : 1,
+              ProgressLine(color: info.color, percentage: info.percentage),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${info.numOfFiles} Files",
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: themeController.isDarkMode
+                          ? Colors.white70
+                          : Colors.black54,
+                    ),
+                  ),
+                  Text(
+                    info.totalStorage!,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: getTextColor(themeController.isDarkMode),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          tablet: FileInfoCardGridView(),
-          desktop: FileInfoCardGridView(
-            childAspectRatio: _size.width < 1400 ? 1.1 : 1.4,
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
 
-class FileInfoCardGridView extends StatelessWidget {
-  const FileInfoCardGridView({
+class ProgressLine extends StatelessWidget {
+  const ProgressLine({
     super.key,
-    this.crossAxisCount = 4,
-    this.childAspectRatio = 1,
+    this.color = primaryColor,
+    required this.percentage,
   });
 
-  final int crossAxisCount;
-  final double childAspectRatio;
+  final Color? color;
+  final int? percentage;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: demoMyFiles.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: defaultPadding,
-        mainAxisSpacing: defaultPadding,
-        childAspectRatio: childAspectRatio,
-      ),
-      itemBuilder: (context, index) => FileInfoCard(info: demoMyFiles[index]),
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 5,
+              decoration: BoxDecoration(
+                color: color!.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+            ),
+            LayoutBuilder(
+              builder: (context, constraints) => Container(
+                width: constraints.maxWidth * (percentage! / 100),
+                height: 5,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

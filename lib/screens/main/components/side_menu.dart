@@ -1,47 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+
+import '../../../constants.dart';
+import '../../../controllers/theme_controller.dart';
 
 class SideMenu extends StatelessWidget {
   const SideMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(child: Image.asset("assets/images/logo.png")),
-          DrawerListTile(
-            title: "Dashboard",
-            svgSrc: "assets/icons/menu_dashboard.svg",
-            press: () {},
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return Drawer(
+          backgroundColor: getCardColor(themeController.isDarkMode),
+          child: ListView(
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: getCardColor(themeController.isDarkMode),
+                ),
+                child: Image.asset("assets/images/logo.png"),
+              ),
+              DrawerListTile(
+                title: "Dashboard",
+                svgSrc: "assets/icons/menu_dashboard.svg",
+                press: () {},
+              ),
+              DrawerListTile(
+                title: "Supplier",
+                svgSrc: "assets/icons/menu_tran.svg",
+                press: () {},
+              ),
+              DrawerListTile(
+                title: "Buat Pembelian",
+                svgSrc: "assets/icons/menu_task.svg",
+                press: () {},
+              ),
+              DrawerListTile(
+                title: "Lihat Pembelian",
+                svgSrc: "assets/icons/menu_doc.svg",
+                press: () {},
+              ),
+              DrawerListTile(
+                title: "Notification",
+                svgSrc: "assets/icons/menu_notification.svg",
+                press: () {},
+              ),
+              DrawerListTile(
+                title: "Settings",
+                svgSrc: "assets/icons/menu_setting.svg",
+                press: () {},
+              ),
+              Divider(color: getBorderColor(themeController.isDarkMode)),
+              // Theme toggle in drawer for mobile
+              DrawerListTile(
+                title: themeController.isDarkMode ? "Light Mode" : "Dark Mode",
+                svgSrc: themeController.isDarkMode
+                    ? "assets/icons/menu_setting.svg"
+                    : "assets/icons/menu_setting.svg",
+                press: themeController.toggleTheme,
+                isThemeToggle: true,
+              ),
+            ],
           ),
-          DrawerListTile(
-            title: "Supplier",
-            svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Buat Pembelian",
-            svgSrc: "assets/icons/menu_task.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Lihat Pembelian",
-            svgSrc: "assets/icons/menu_doc.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Notification",
-            svgSrc: "assets/icons/menu_notification.svg",
-            press: () {},
-          ),
-          DrawerListTile(
-            title: "Settings",
-            svgSrc: "assets/icons/menu_setting.svg",
-            press: () {},
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -49,26 +73,53 @@ class SideMenu extends StatelessWidget {
 class DrawerListTile extends StatelessWidget {
   const DrawerListTile({
     super.key,
-    // For selecting those three line once press "Command+D"
     required this.title,
     required this.svgSrc,
     required this.press,
+    this.isThemeToggle = false,
   });
 
   final String title, svgSrc;
   final VoidCallback press;
+  final bool isThemeToggle;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: press,
-      horizontalTitleGap: 0.0,
-      leading: SvgPicture.asset(
-        svgSrc,
-        colorFilter: ColorFilter.mode(Colors.white54, BlendMode.srcIn),
-        height: 16,
-      ),
-      title: Text(title, style: TextStyle(color: Colors.white54)),
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return ListTile(
+          onTap: press,
+          horizontalTitleGap: 0.0,
+          leading: isThemeToggle
+              ? Icon(
+                  themeController.isDarkMode
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
+                  color: themeController.isDarkMode
+                      ? Colors.white54
+                      : Colors.black54,
+                  size: 16,
+                )
+              : SvgPicture.asset(
+                  svgSrc,
+                  colorFilter: ColorFilter.mode(
+                    themeController.isDarkMode
+                        ? Colors.white54
+                        : Colors.black54,
+                    BlendMode.srcIn,
+                  ),
+                  height: 16,
+                ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: themeController.isDarkMode
+                  ? Colors.white54
+                  : Colors.black54,
+            ),
+          ),
+        );
+      },
     );
   }
 }

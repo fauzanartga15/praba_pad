@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
 import '../../../controllers/menu_app_controller.dart';
+import '../../../controllers/theme_controller.dart';
 import '../../../responsive.dart';
 
 class Header extends StatelessWidget {
@@ -23,8 +24,42 @@ class Header extends StatelessWidget {
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
         Expanded(child: SearchField()),
+        ThemeToggleButton(),
         ProfileCard(),
       ],
+    );
+  }
+}
+
+class ThemeToggleButton extends StatelessWidget {
+  const ThemeToggleButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return Container(
+          margin: EdgeInsets.only(left: defaultPadding / 2),
+          child: IconButton(
+            onPressed: themeController.toggleTheme,
+            icon: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              child: Icon(
+                themeController.isDarkMode
+                    ? Icons.light_mode_outlined
+                    : Icons.dark_mode_outlined,
+                key: ValueKey(themeController.isDarkMode),
+                color: themeController.isDarkMode
+                    ? Colors.white70
+                    : Colors.black54,
+              ),
+            ),
+            tooltip: themeController.isDarkMode
+                ? 'Switch to Light Mode'
+                : 'Switch to Dark Mode',
+          ),
+        );
+      },
     );
   }
 }
@@ -34,30 +69,44 @@ class ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: defaultPadding),
-      padding: EdgeInsets.symmetric(
-        horizontal: defaultPadding,
-        vertical: defaultPadding / 2,
-      ),
-      decoration: BoxDecoration(
-        color: secondaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Row(
-        children: [
-          Image.asset("assets/images/profile_pic.png", height: 38),
-          if (!Responsive.isMobile(context))
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding / 2,
-              ),
-              child: Text("Angelina Jolie"),
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return Container(
+          margin: EdgeInsets.only(left: defaultPadding),
+          padding: EdgeInsets.symmetric(
+            horizontal: defaultPadding,
+            vertical: defaultPadding / 2,
+          ),
+          decoration: BoxDecoration(
+            color: getCardColor(themeController.isDarkMode),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            border: Border.all(
+              color: getBorderColor(themeController.isDarkMode),
             ),
-          Icon(Icons.keyboard_arrow_down),
-        ],
-      ),
+          ),
+          child: Row(
+            children: [
+              Image.asset("assets/images/profile_pic.png", height: 38),
+              if (!Responsive.isMobile(context))
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: defaultPadding / 2,
+                  ),
+                  child: Text(
+                    "Angelina Jolie",
+                    style: TextStyle(
+                      color: getTextColor(themeController.isDarkMode),
+                    ),
+                  ),
+                ),
+              Icon(
+                Icons.keyboard_arrow_down,
+                color: getTextColor(themeController.isDarkMode),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -67,28 +116,41 @@ class SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: "Search",
-        fillColor: secondaryColor,
-        filled: true,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
-        suffixIcon: InkWell(
-          onTap: () {},
-          child: Container(
-            padding: EdgeInsets.all(defaultPadding * 0.75),
-            margin: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
-            decoration: BoxDecoration(
-              color: primaryColor,
+    return Consumer<ThemeController>(
+      builder: (context, themeController, child) {
+        return TextField(
+          style: TextStyle(color: getTextColor(themeController.isDarkMode)),
+          decoration: InputDecoration(
+            hintText: "Search",
+            hintStyle: TextStyle(
+              color: themeController.isDarkMode
+                  ? Colors.white54
+                  : Colors.black54,
+            ),
+            fillColor: getCardColor(themeController.isDarkMode),
+            filled: true,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
             ),
-            child: SvgPicture.asset("assets/icons/Search.svg"),
+            suffixIcon: InkWell(
+              onTap: () {},
+              child: Container(
+                padding: EdgeInsets.all(defaultPadding * 0.75),
+                margin: EdgeInsets.symmetric(horizontal: defaultPadding / 2),
+                decoration: BoxDecoration(
+                  color: primaryColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                ),
+                child: SvgPicture.asset(
+                  "assets/icons/Search.svg",
+                  colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

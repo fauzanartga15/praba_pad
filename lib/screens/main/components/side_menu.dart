@@ -20,7 +20,24 @@ class SideMenu extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: getCardColor(themeController.isDarkMode),
                 ),
-                child: Image.asset("assets/images/logo.png"),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      "assets/images/logo.png",
+                      width: 34,
+                      height: 34,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      "Praba",
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               DrawerListTile(
                 title: "Dashboard",

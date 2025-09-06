@@ -7,6 +7,7 @@ import '../../controllers/theme_controller.dart';
 import '../../responsive.dart';
 import 'piurchase_process_screen.dart';
 import 'purchase_completed_screen.dart';
+import 'purchase_invoice_screen.dart';
 import 'purchase_item_status_screem.dart';
 import 'purchase_request_screen.dart';
 import 'purchase_unpaid_screen.dart';
@@ -162,8 +163,8 @@ class _PurchaseMainScreenState extends State<PurchaseMainScreen> {
         return PurchaseRequestScreen();
       case 'diproses':
         return PurchaseProcessScreen();
-      // case 'faktur':
-      //   return PurchaseInvoiceScreen();
+      case 'faktur':
+        return PurchaseInvoiceScreen();
       case 'status_barang':
         return PurchaseItemsScreen();
       case 'belum_lunas':
@@ -458,67 +459,6 @@ class _PurchaseMainScreenState extends State<PurchaseMainScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildPlaceholderScreen(
-    String title,
-    IconData icon,
-    String description,
-  ) {
-    return Consumer<ThemeController>(
-      builder: (context, themeController, child) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(icon, size: 80, color: primaryColor),
-              ),
-              SizedBox(height: 24),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: getTextColor(themeController.isDarkMode),
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: themeController.isDarkMode
-                      ? Colors.white70
-                      : Colors.black54,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    currentView = 'overview';
-                  });
-                },
-                icon: Icon(Icons.arrow_back),
-                label: Text('Kembali ke Overview'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

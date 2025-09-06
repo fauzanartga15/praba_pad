@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
       case 'buat':
         return 'Create Purchase';
       case 'lihat':
-        return 'Data Pembelian'; // Updated name
+        return 'Data Pembelian';
       default:
         return 'Dashboard';
     }
@@ -69,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
       case 'buat':
         return CreatePurchaseScreen();
       case 'lihat':
-        return PurchaseMainScreen(); // Use the new comprehensive screen
+        return PurchaseMainScreen();
       default:
         return DashboardScreen();
     }

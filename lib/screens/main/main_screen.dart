@@ -1,10 +1,13 @@
+// lib/screens/main/main_screen.dart (UPDATED)
+
 import 'package:flutter/material.dart';
-import 'package:praba_ipad/screens/purchase/purchase_order_screen.dart';
+import 'package:praba_ipad/screens/purchase_order/purchase_order_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/menu_app_controller.dart';
 import '../../responsive.dart';
 import '../dashboard/dashboard_screen.dart';
+import '../purchase_status/purchase_main_screen.dart';
 import '../suppliers/supplier_main_screen.dart';
 import 'components/expandablebottom.dart';
 import 'components/side_menu.dart';
@@ -51,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
       case 'buat':
         return 'Create Purchase';
       case 'lihat':
-        return 'View Purchases';
+        return 'Data Pembelian'; // Updated name
       default:
         return 'Dashboard';
     }
@@ -66,76 +69,10 @@ class _MainScreenState extends State<MainScreen> {
       case 'buat':
         return CreatePurchaseScreen();
       case 'lihat':
-        return _buildPlaceholderScreen(
-          'View Purchases',
-          Icons.receipt_long,
-          'View and manage purchase orders',
-        );
+        return PurchaseMainScreen(); // Use the new comprehensive screen
       default:
         return DashboardScreen();
     }
-  }
-
-  Widget _buildPlaceholderScreen(String title, IconData icon, String subtitle) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2697FF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: const Color(0xFF2697FF).withValues(alpha: 0.2),
-                width: 2,
-              ),
-            ),
-            child: Icon(icon, size: 80, color: const Color(0xFF2697FF)),
-          ),
-          SizedBox(height: 32),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black87,
-            ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? Colors.white70
-                  : Colors.black54,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 40),
-          OutlinedButton.icon(
-            onPressed: () {
-              setState(() {
-                currentPage = 'dashboard';
-              });
-            },
-            icon: Icon(Icons.dashboard_outlined),
-            label: Text('Back to Dashboard'),
-            style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              side: BorderSide(color: const Color(0xFF2697FF)),
-              foregroundColor: const Color(0xFF2697FF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
